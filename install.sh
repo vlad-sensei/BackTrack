@@ -33,7 +33,3 @@ ln -s $BTD/rc/bashrc .bashrc
 
 mv -r  /root/Desktop /root/Private/Desktop
 ln -s $BTD/dt /root/Desktop
-
-#add to bash.rc PATH and move bash.history to private dir
-
-echo PATH=\$PATH: #add new path here
