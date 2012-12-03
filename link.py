@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocessi, os.path
+import subprocess, os.path
 
 x=subprocess.Popen
 
