@@ -16,4 +16,4 @@ l['/x/rc']='/x/dt/Conf'
 for key in l:
   if not os.path.exists(l[key]): x(['ln', '-s', key, l[key]])
 
-exit 0
+exit(0)
