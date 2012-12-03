@@ -28,8 +28,6 @@ git clone https://github.com/vlad-sensei/BackTrack.git
 cd /root/
 
 mv .bash_history /root/Private/.bash_history
-ln -s /root/Private/.bash_history .bash_history
-ln -s $BTD/rc/bashrc .bashrc
-
 mv -r  /root/Desktop /root/Private/Desktop
-ln -s $BTD/dt /root/Desktop
+
+sh $BTD/link.sh
