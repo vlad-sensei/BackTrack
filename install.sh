@@ -29,5 +29,6 @@ cd /root/
 
 mv .bash_history /root/Private/.bash_history
 mv -r  /root/Desktop /root/Private/Desktop
+rm .bashrc
 
 sh $BTD/link.sh
