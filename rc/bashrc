@@ -103,6 +103,12 @@ fi
 PATH=$PATH:/x/sc
 BTD='/root/Private/BackTrack'
 
+function mkcd() {
+mkdir -p "$@"
+cd "$1"
+}
+
+
 export PATH=$PATH:/etc/alternatives/gem-bin
 
 export PATH=$PATH:/root/.gem/ruby/1.9.2/bin

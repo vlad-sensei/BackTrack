@@ -27,8 +27,8 @@ cd /root/Private/
 git clone https://github.com/vlad-sensei/BackTrack.git
 cd /root/
 
-mv .bash_history /root/Private/.bash_history
+mv /root/.bash_history /root/Private/.bash_history
 mv -r  /root/Desktop /root/Private/Desktop
-rm .bashrc
+rm /root/.bashrc
 
 sh $BTD/link.sh
