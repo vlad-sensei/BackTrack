@@ -31,4 +31,4 @@ mv /root/.bash_history /root/Private/.bash_history
 mv -r  /root/Desktop /root/Private/Desktop
 rm /root/.bashrc
 
-sh $BTD/link.sh
+sh $BTD/link.py
