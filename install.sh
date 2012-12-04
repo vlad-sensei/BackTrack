@@ -14,7 +14,8 @@ passwd
 echo Updating..
 apt-get update
 apt-get dist-upgrade -y
-apt-get install libnet1-dev cmake libpcre-dev 
+
+apt-get install libnet1-dev cmake libpcre-dev libgtk2.0-dev
 
 echo Updating Metasploit..
 msfupdate
