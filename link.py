@@ -19,6 +19,6 @@ for key in l:
 
 if not os.path.exists('/etc/init.d/chmac'):
   x(['cp', '/x/sc/chmac', '/etc/init.d/chmac'])
-  x(['update-rc.d', 'chmac', 'start'])
+  x(['update-rc.d', 'chmac', 'defaults'])
 
 exit(0)
