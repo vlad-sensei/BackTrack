@@ -17,6 +17,8 @@ l['/x/sc/gsh']='/x/dt/Gnome-Shell'
 for key in l:
   if not os.path.exists(l[key]): x(['ln', '-s', key, l[key]])
 
-if not os.path.existsfunc_closure.EX_CANTCREAT
+if not os.path.exists('/etc/init.d/chmac'):
+  x(['cp', '/x/sc/chmac', '/etc/init.d/chmac'])
+  x(['update-rc.d', chmac, 'start'])
 
 exit(0)
