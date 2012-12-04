@@ -14,9 +14,11 @@ passwd
 echo Updating..
 apt-get update
 apt-get dist-upgrade -y
+apt-get install libnet1-dev cmake libpcre-dev 
 
 echo Updating Metasploit..
 msfupdate
+
 
 #install private dir and make links
 

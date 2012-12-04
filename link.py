@@ -12,6 +12,7 @@ l[B]='/x'
 l[B+'update.sh']='/x/sc/bt-update'
 l['/x/sc']='/x/dt/Scripts'
 l['/x/rc']='/x/dt/Conf'
+l['/x/sc/gsh.sh']='/x/dt/Gnome-Shell'
 
 for key in l:
   if not os.path.exists(l[key]): x(['ln', '-s', key, l[key]])
