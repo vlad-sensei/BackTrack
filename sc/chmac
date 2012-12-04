@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+import subprocess, shlex
+
+def x(c): return subprocess.Popen(shlex.split(c), stdout=subprocess.PIPE)
+
+proc=x("ifconfig -a -s")
+ifaces=[]
+for line in proc.stdout.readlines(): 
+  iface = line.split()[0]
+  if (iface.find("eth")!=-1 or iface.find("wlan")!=-1): ifaces+=[iface]
+
+for iface in ifaces: x("macchanger -A " + iface)
