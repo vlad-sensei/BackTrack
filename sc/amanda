@@ -10,6 +10,18 @@ def getifgate():
     if s[1]!=b"0.0.0.0":
       return str(s[1]), str(s[7])
 
-gate, iface = getifgate()
+def setup():
+  f=open('/proc/sys/net/ipv4/ip_forward')
+  f.write("1")
+  f.close()
+  x("iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 8100")
 
-print("%s %s" % (gate, iface))
+def clean():
+  f=open('/pro/sys/net/ipv4/ip_forward')
+  f.write("0")
+  f.close()
+  x("iptable --flush")
+
+def __main__():
+  gate, iface = getifgate()
+
