@@ -20,7 +20,7 @@ def clean():
   f=open('/proc/sys/net/ipv4/ip_forward',"w")
   f.write("0")
   f.close()
-  x("iptable --flush")
+  x("iptables --flush")
 
 port=8100
 
