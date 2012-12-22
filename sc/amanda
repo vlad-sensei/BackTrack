@@ -24,7 +24,9 @@ def clean():
   f.write("0")
   f.close()
   x("iptables --flush")
-  for p in ps.values(): p.kill()
+  for p in ps.values(): 
+    print(str(p))
+    p.kill()
 
 
 while True:
