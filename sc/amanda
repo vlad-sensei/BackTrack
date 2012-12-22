@@ -22,7 +22,6 @@ def clean():
   f.close()
   x("iptable --flush")
 
-def __main__():
-  gate, iface = getifgate()
-  print(gate)
+gate, iface = getifgate()
+print(gate)
 
