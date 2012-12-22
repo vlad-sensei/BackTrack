@@ -28,7 +28,7 @@ while True:
   gate, iface = getifgate()
   setup(port)
   x("ssls -k -l "+str(port))
-  i = intput("> ")
+  i = input("> ")
   clean()
   break
 
