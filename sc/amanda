@@ -28,7 +28,7 @@ ps={}
 while True:
   gate, iface = getifgate()
   setup(port)
-  ps['ssls']=x('xterm -e "ssls -k -l '+str(port)+'""')
+  ps['ssls']=x('xterm -e "ssls -k -l '+str(port)+'"')
   i = input("> ")
   clean()
   break
