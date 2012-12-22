@@ -3,6 +3,9 @@ import subprocess, shlex, re
 
 def x(c): return subprocess.Popen(shlex.split(c), stdout=subprocess.PIPE)
 
+ps={}
+port=8100
+
 def getifgate():
   p=x("route -n")
   for l in p.stdout.readlines()[2:]:
@@ -21,9 +24,8 @@ def clean():
   f.write("0")
   f.close()
   x("iptables --flush")
+  for p in ps.values(): p.kill()
 
-port=8100
-ps={}
 
 while True:
   gate, iface = getifgate()
