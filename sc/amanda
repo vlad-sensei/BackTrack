@@ -24,4 +24,5 @@ def clean():
 
 def __main__():
   gate, iface = getifgate()
+  prind(gate)
 
