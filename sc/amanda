@@ -23,11 +23,12 @@ def clean():
   x("iptables --flush")
 
 port=8100
+ps={}
 
 while True:
   gate, iface = getifgate()
   setup(port)
-  x("ssls -k -l "+str(port))
+  ps['ssls']=x('xterm -e "ssls -k -l '+str(port)+'""')
   i = input("> ")
   clean()
   break
