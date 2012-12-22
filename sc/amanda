@@ -10,7 +10,7 @@ def getifgate():
     if s[1]!=b"0.0.0.0":
       return str(s[1]), str(s[7])
 
-def setup(port):
+def setup(port=8100):
   f=open('/proc/sys/net/ipv4/ip_forward')
   f.write("1")
   f.close()
@@ -21,8 +21,6 @@ def clean():
   f.write("0")
   f.close()
   x("iptable --flush")
-
-port=8100
 
 while True:
   gate, iface = getifgate()
