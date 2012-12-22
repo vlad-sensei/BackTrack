@@ -17,7 +17,7 @@ def setup(port=8100):
   x("iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port " + str(port))
 
 def clean():
-  f=open('/pro/sys/net/ipv4/ip_forward',"w")
+  f=open('/proc/sys/net/ipv4/ip_forward',"w")
   f.write("0")
   f.close()
   x("iptable --flush")
