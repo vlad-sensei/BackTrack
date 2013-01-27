@@ -18,11 +18,11 @@ l['/x/rc']='/x/dt/Conf'
 l['/x/sc/gsh']='/x/dt/Gnome-Shell'
 l['/x/loot']='x/dt/Loot'
 
-for key in l:
-  if not os.path.exists(l[key]): x(['ln', '-s', key, l[key]])
-
 for dr in d:
   if not os.path.exists(dr): os.makedirs(dr)
+
+for key in l:
+  if not os.path.exists(l[key]): x(['ln', '-s', key, l[key]])
 
 if not os.path.exists('/etc/init.d/chmac'):
   x(['cp', '/x/sc/chmac', '/etc/init.d/chmac'])
