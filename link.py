@@ -7,7 +7,7 @@ x=subprocess.Popen
 d=[]
 d.append('/x/loot')
 
-x('ln', '-s', '/x/loot', '/x/dt/Loot')
+x(['ln', '-s', '/x/loot', '/x/dt/Loot'])
 
 l={}
 B='/root/Private/BackTrack'
