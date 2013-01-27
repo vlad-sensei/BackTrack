@@ -7,10 +7,10 @@ x=subprocess.Popen
 d=[]
 d.append('/x/loot')
 
-x(['ln', '-s', '/x/loot', '/x/dt/Loot'])
+B='/root/Private/BackTrack'
+x(['ln', '-s', B, '/x'])
 
 l={}
-B='/root/Private/BackTrack'
 l['/root/Private/.bash_history']='/root/.bash_history'
 l[B+'/rc/bashrc']='/root/.bashrc'
 #l[B]='/x'
