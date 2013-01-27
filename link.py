@@ -8,7 +8,6 @@ d=[]
 d.append('/x/loot')
 
 B='/root/Private/BackTrack'
-#x(['ln', '-s', B, '/x'])
 
 l={}
 l['/root/Private/.bash_history']='/root/.bash_history'
