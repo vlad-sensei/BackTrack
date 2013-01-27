@@ -8,17 +8,17 @@ d=[]
 d.append('/x/loot')
 
 B='/root/Private/BackTrack'
-x(['ln', '-s', B, '/x'])
+#x(['ln', '-s', B, '/x'])
 
 l={}
 l['/root/Private/.bash_history']='/root/.bash_history'
 l[B+'/rc/bashrc']='/root/.bashrc'
-#l[B]='/x'
+l[B]='/x'
 l[B+'/update.sh']='/x/sc/bt-update'
 l['/x/sc']='/x/dt/Scripts'
 l['/x/rc']='/x/dt/Conf'
 l['/x/sc/gsh']='/x/dt/Gnome-Shell'
-l['/x/loot']='x/dt/Loot'
+l['/x/loot']='/x/dt/Loot'
 
 for dr in d:
   if not os.path.exists(dr): os.makedirs(dr)
