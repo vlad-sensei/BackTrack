@@ -47,7 +47,7 @@ class SslLogParser():
                           'Password_Textbox=', 'pass=']
         self.usernames = ['user=', 'name=', 'mail=', 'login=', 'USERID=', 'emailTextBox=', 'email=', 'inputEmailHandle=', 
                           'theAccountName=', 'Email_Textbox=', 'UserName=', 'userid=', 'auth_userId=', 'email]=', 'email=']
-  
+
     def getaccs(self):
         log = open(self.filePath, 'r')
         self.data = log.readlines()

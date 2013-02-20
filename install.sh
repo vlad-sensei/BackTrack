@@ -15,7 +15,7 @@ echo Updating..
 apt-get update
 apt-get dist-upgrade -y
 
-apt-get install libnet1-dev cmake libpcre3-dev libgtk2.0-dev
+apt-get install libnet1-dev cmake libpcre3-dev libgtk2.0-dev libnotify-bin
 
 echo Updating Metasploit..
 msfupdate
