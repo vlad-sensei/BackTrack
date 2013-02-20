@@ -13,6 +13,7 @@ dr = makeloot('amanda')
 def menu():
   if "cap" in ps: capv="Stop"
   else: capv="Start"
+  print("\n")
   print("c - %s traffic capture" % capv)
   print("d - Open loot foldes (%s)" % dr)
   print("q - Quit quietly")
@@ -68,6 +69,7 @@ if True:
     menu()
     i = input("> ")
     if i=="q": break;
+    if i=="d": x("nautilus %s" % (dr))
 
   clean()
 #except: clean()
