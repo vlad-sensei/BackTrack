@@ -65,7 +65,7 @@ if True:
   #ps['arp']=x('%s -e "arpspoof -i %s %s"' % (term, iface, gate))
   i = None
   while True:
-    print(menu)
+    menu()
     i = input("> ")
     if i=="q": break;
 
