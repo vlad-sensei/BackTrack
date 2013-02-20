@@ -1,0 +1,247 @@
+#!/usr/bin/env python2.7
+
+import subprocess, argparse, socket, time, csv, glob, os, shutil, sys, urllib
+
+parser=argparse.ArgumentParser()
+
+parser.add_argument('-e', '--eci', action='store', default=False, dest='eci',
+                    help='*.eci file')
+
+parser.add_argument('-d', '--daemon', action='store_true', default=False, dest='daemon',
+                    help='Run in Daemon mode')
+parser.add_argument('-u', '--update', action='store', default=20, dest='rate',
+                    help='Update rate')
+parser.add_argument('-c', '--csv', action='store', default='', dest='csv',
+                    help='Read from csv file')
+parser.add_argument('-s', '--ssllog', action='store', default='', dest='ssl',
+                    help='Read from sslstrip log')
+parser.add_argument('-H', '--hide', action='store_false', default=True, dest='show',
+                    help='Do not show credentials')
+parser.add_argument('-S', '--sort', action='store_true', default=False, dest='sort',
+                    help='Do not show credentials')
+parser.add_argument('-o', '--output', action='store', default='/x/loot', dest='dir',
+                    help='Output folder')
+
+opts = parser.parse_args()
+ex = subprocess.Popen
+pipe = subprocess.PIPE
+
+class acc(object):
+ def __init__(self, user='', pwd='', ip='', web='', info='', conn='', port='', domain='', service=''):
+  self.user = user
+  self.pwd = pwd
+  self.ip = ip
+  self.web = web
+  self.info = info
+  self.conn = conn
+  self.port = port
+  self.domain = domain
+  self.service = service
+
+class SslLogParser():
+
+    def __init__(self, filePath='sslstrip.log'):
+        self.accs = []
+        self.filePath = filePath
+        self.passwords = ['Passwd=', 'passwd=', 'word=', 'pwd=', 'password]=', 'passwordTextBox=', 'theAccountPW=', 
+                          'Password_Textbox=', 'pass=']
+        self.usernames = ['user=', 'name=', 'mail=', 'login=', 'USERID=', 'emailTextBox=', 'email=', 'inputEmailHandle=', 
+                          'theAccountName=', 'Email_Textbox=', 'UserName=', 'userid=', 'auth_userId=', 'email]=', 'email=']
+  
+    def getaccs(self):
+        log = open(self.filePath, 'r')
+        self.data = log.readlines()
+        log.close()
+        for line in self.data:
+            try:
+                if line.find('POST') != -1:
+  		 web = line[line.find('(') + 1:line.find(')')]	
+                 if web.split('.')[0].find('www') == 0 : web = web[web.find('.')+1:]	 
+     		 info = urllib.unquote(self.data[self.data.index(line) + 1]).strip('\n')
+	         user = self.decodeString(info, self.usernames)
+	         pwd = self.decodeString(info, self.passwords)
+		 if user.find('\\') > -1: 
+	 	  domain=user.split("\\")[0]
+	  	  user=user.split("\\")[1]
+	 	 else: domain=''
+ 	         new = acc(service='www',user=user,pwd=pwd,web=web,info=info, domain=domain)
+	         self.accs.append(acc(service='www',user=user,pwd=pwd,web=web,info=info, domain=domain, port='80'))
+            except: continue
+    
+    def decodeString(self, string, tokens):
+            exists=False
+            data=""
+            for token in tokens:
+                if string.find(token) > -1:
+                    start = string[string.find(token) + len(token):]
+                    buff = start[:start.find('&')]
+                    if len(buff) > len(data) :
+                      data=buff
+                      exists=True
+            if not exists: raise
+            return data
+
+
+def getacc(st):
+ web=False
+ sts = st.split()
+ ip = sts[0]
+ i=2
+ if sts[1].find('(') > -1: web = sts[1].strip('(').strip(')')
+ else:
+  i=1
+  web=''
+ conn = sts[i]
+ port = sts[i+1]
+ pwd=''
+ for j in range(1, len(sts)-1):
+  if sts[j]=='USER:' and not sts[j+1] == 'PASS:': user=sts[j+1]
+  if sts[j]=='PASS:' and not sts[j+1] == 'INFO:': pwd=sts[j+1]
+  if sts[j]=='INFO:': info=st[st.find('INFO:')+6:-1]
+ if (web == '') and info.find('http')==0: web=info.split('/')[2]
+ if user.find('\\') > -1: 
+  domain=user.split("\\")[0]
+  user=user.split("\\")[1]
+ else: domain=''
+ try: service=socket.getservbyport(int(port))
+ except: service=''
+ if service=='' and info[:4-len(info)]=='SNMP': service='snmp'
+ if web.split('.')[0].find('www') == 0 : web = web[web.find('.')+1:]
+ return acc(user=user, pwd=pwd, ip=ip, web=web, info=info, conn=conn, port=port, domain=domain,service=service)
+
+def notifymsg(ac):
+ msg=''
+ if ac.service != 'https' and ac.service != 'www': msg = msg + ac.ip + ':' + ac.port +"\t" 
+ if ac.service != '': msg = msg + ac.service + '\n'
+ if ac.web != '': msg = msg + "Url: " +ac.web + '\n'
+ if ac.domain != '': msg = msg + "Domain: " +ac.domain + '\n'
+ if ac.user != '': msg = msg + "User: " +ac.user + '\n'
+ if ac.pwd != '': msg = msg + "Pass: " +ac.pwd + '\n'
+ return msg[:-1]
+
+def logtofile(ac,fn):
+ log=csv.writer(open(fn,"ab"), delimiter='|')
+ log.writerow([ac.service, ac.user, ac.pwd,ac.web, ac.domain,  ac.ip, ac.port, ac.conn, ac.info])
+
+def addentry(new):
+ if new.service == '': logtofile(new,opts.dir + '/other.csv')
+ elif new.service == 'https': logtofile(new,opts.dir + '/www.csv')
+ else: logtofile(new, opts.dir + '/' +new.service+'.csv')
+ if new.service == 'www' :
+  if not os.path.isdir(opts.dir+ '/www') : os.mkdir(opts.dir+ '/www')
+  try: domain = new.web.split('.')[len(new.web.split('.'))-2]
+  except: domain = '<unknown>'
+  logtofile(new, opts.dir + '/www/'+ domain+'.csv')
+
+def merge():
+ if os.path.isfile(opts.dir+'/LAN.csv'): os.remove(opts.dir+'/LAN.csv')
+ all=open(opts.dir+'/LAN.csv', 'ab')
+ for file in glob.glob(opts.dir+"/*.csv"):
+  if file != opts.dir+'/LAN.csv' :
+   for line in open(file,'rb').readlines():
+    all.write(line)
+
+def isnew(new):
+   for j in range(0,len(accs)):
+    if (accs[j].user == new.user and accs[j].pwd == new.pwd and accs[j].port == new.port):
+     if accs[j].ip == new.ip or (accs[j].web.split('.')[len(accs[j].web.split('.'))-2] == new.web.split('.')[len(new.web.split('.'))-2] and not new.web == '' ):
+      if accs[j].web=='': accs[j].web==new.web
+      return False
+   if opts.daemon:   ex(['notify-send', '-t', '95000', notifymsg(new)])
+   return True
+
+def chknew():
+ if opts.eci:
+  Pel=ex(["etterlog","-p", opts.eci],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+  Pel.wait()
+  buff=Pel.stdout.readlines()
+  for line in buff:
+   if line[0]==" ":
+    new = getacc(line)
+    if isnew(new) :
+     addentry(new)
+     accs.append(new)
+ if opts.ssl:
+  ssllog=SslLogParser(filePath=opts.ssl)
+  ssllog.getaccs()
+  for ac in ssllog.accs:
+   if isnew(ac):
+    addentry(ac)
+    accs.append(ac)
+
+def show(tmpfile):
+ if opts.show:
+  if os.path.isfile(tmpfile): os.remove(tmpfile)
+  tmp=open(tmpfile, 'wb') 
+  tmp.write('%-7s | %-32s %-17s | %-25s %-10s | %-15s:%-5s| %-15s \n\n' % ('SERVICE', 'USER', 'PASSWORD', 'URL', 'DOMAIN', 'IP','PORT', 'INFO') )
+  for ac in accs: tmp.write('%-7s | %-32s %-17s | %-25s %-10s | %-15s:%-5s| %-15s \n' % (' ' +ac.service, ac.user, ac.pwd, ac.web, ac.domain, ac.ip, ac.port, ac.info) )
+  ex(['gnome-terminal', '-x', 'nano', tmpfile]).wait()
+
+accs=[]
+csvaccs=[]
+
+if not os.path.isdir(opts.dir):
+ try: os.mkdir(opts.dir)
+ except:
+  print 'Unable to create save directory'
+  exit()
+
+if opts.csv or os.path.isfile(opts.dir+'/LAN.csv'):
+ if not opts.csv: opts.csv=opts.dir+'/LAN.csv'
+ if os.path.isfile(opts.csv):
+  log=csv.reader(open(opts.csv), delimiter='|')
+  for row in log: 
+   new=acc(service=row[0], user=row[1], pwd=row[2], web=row[3], domain=row[4], ip=row[5], port=row[6], conn=row[7], info=row[8])
+   if isnew(new):accs.append(new)
+  os.remove(opts.csv)
+  for ac in accs: logtofile(ac, opts.csv)
+  if not opts.ssl and not opts.eci:
+   show(opts.csv+'~')
+   if opts.sort:
+    opts.dir=opts.dir+'/lan[sorted]'
+    if os.path.isdir(opts.dir): shutil.rmtree(opts.dir)
+    os.mkdir(opts.dir)
+    for ac in accs: addentry(ac)
+ else: print '*.csv file was not found'
+
+if not opts.eci and not opts.ssl : exit()
+else:
+ if opts.daemon: time.sleep(7)
+ if opts.eci:
+  if not os.path.isfile(opts.eci):
+   print '*.eci file was not found'
+   opts.eci =False
+ if opts.ssl:
+  if not os.path.isfile(opts.ssl):
+   print 'Sslstrip log was not found'
+   opts.ssl = False
+if not opts.eci and not opts.ssl :
+ print 'Exiting...'
+ exit()
+
+if os.path.isfile(opts.dir + '/LAN.csv'):
+ log=csv.reader(open(opts.dir+ '/LAN.csv',"rb"), delimiter='|')
+ for row in log:  
+   new=acc(service=row[0], user=row[1], pwd=row[2], web=row[3], domain=row[4], ip=row[5], port=row[6], conn=row[7], info=row[8])
+   if isnew(new): accs.append(new)
+ for file in glob.glob(opts.dir+"/*.csv"): os.remove(file)
+ if os.path.isdir(opts.dir + '/www'): shutil.rmtree(opts.dir + '/www')
+ for new in accs:
+  if new.service == '': logtofile(new,opts.dir + '/other.csv')
+  elif new.service == 'https': logtofile(new,opts.dir + '/www.csv')
+  else: logtofile(new, opts.dir + '/' + new.service + '.csv')
+ merge()
+ 
+if opts.daemon:
+ try:
+  while True:
+   chknew()
+   merge()
+   time.sleep(opts.rate)
+ except:
+  print '\nQuitting..'
+  chknew()
+else: chknew()
+merge()
+if opts.show:show(opts.dir+'/accs~')
+exit()

